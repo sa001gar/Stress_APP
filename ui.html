@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+    body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+    font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    }
+
+    .main-heading {
+    text-align: center;
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 30px;
+    background: linear-gradient(120deg, #2c3e50, #3498db);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px 0;
+    }
+
+    .upload-container {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    margin-bottom: 20px;
+    text-align: center;
+    }
+
+    .title {
+    font-size: 22px;
+    margin-bottom: 25px;
+    color: #2d3748;
+    font-weight: 600;
+    }
+
+    .custom-file-input {
+    padding: 10px 15px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-right: 10px;
+    }
+
+    .submit-button {
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #00c6fb 0%, #005bea 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    }
+
+    .table-container {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    margin-top: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+    }
+
+    table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    }
+
+    th, td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    }
+
+    th {
+    background: #f8fafc;
+    font-weight: 600;
+    }
+
+    tr:hover {
+    background-color: #f5f7fa;
+    }
+
+    .loading {
+    display: none;
+    margin: 20px 0;
+    color: #4a5568;
+    }
+
+    .error {
+    color: #e53e3e;
+    margin: 10px 0;
+    display: none;
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <h1 class="main-heading">Human Stress Detection using Machine Learning</h1>
+    <div class="upload-container">
+    <h2 class="title">Upload File</h2>
+    <input type="file" id="fileInput" class="custom-file-input" accept=".csv">
+    <button onclick="uploadFile()" class="submit-button">Upload</button>
+    <div id="loading" class="loading">Uploading file...</div>
+    <div id="error" class="error"></div>
+    </div>
+
+    <div id="tableContainer" class="table-container" style="display: none;">
+    <h2>Response Data</h2>
+    <div id="tableContent"></div>
+    </div>
+</div>
+
+<script>
+    async function uploadFile() {
+    const fileInput = document.getElementById('fileInput');
+    const loadingDiv = document.getElementById('loading');
+    const errorDiv = document.getElementById('error');
+    const tableContainer = document.getElementById('tableContainer');
+    
+    if (!fileInput.files[0]) {
+        errorDiv.style.display = 'block';
+        errorDiv.textContent = 'Please select a file first';
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', fileInput.files[0]);
+
+    try {
+        loadingDiv.style.display = 'block';
+        errorDiv.style.display = 'none';
+        
+        const response = await fetch('http://127.0.0.1:8000/upload/', {
+        method: 'POST',
+        body: formData
+        });
+
+        if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        displayData(data);
+        tableContainer.style.display = 'block';
+    } catch (error) {
+        errorDiv.style.display = 'block';
+        errorDiv.textContent = `Error: ${error.message}`;
+    } finally {
+        loadingDiv.style.display = 'none';
+    }
+    }
+
+    function displayData(data) {
+    const tableContent = document.getElementById('tableContent');
+    
+    if (Array.isArray(data) && data.length > 0) {
+        // Create table headers from the first object's keys
+        const headers = Object.keys(data[0]);
+        
+        let tableHTML = `
+        <table>
+            <thead>
+            <tr>
+                ${headers.map(header => `<th>${header}</th>`).join('')}
+            </tr>
+            </thead>
+            <tbody>
+            ${data.map(row => `
+                <tr>
+                ${headers.map(header => `<td>${row[header]}</td>`).join('')}
+                </tr>
+            `).join('')}
+            </tbody>
+        </table>
+        `;
+        
+        tableContent.innerHTML = tableHTML;
+    } else {
+        tableContent.innerHTML = '<p>No data available</p>';
+    }
+    }
+</script>
+</body>
+</html>
