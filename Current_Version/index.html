@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stress Detection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        form {
+            display: grid;
+            gap: 10px;
+        }
+        label {
+            font-weight: bold;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #result {
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Stress Detection</h1>
+        <form id="stressForm">
+            <label for="BVP_mean">Blood Volume (BVP Mean):</label>
+            <input type="number" id="BVP_mean" step="any" required>
+
+            <label for="EDA_phasic_mean">EDA Phasic Mean:</label>
+            <input type="number" id="EDA_phasic_mean" step="any" required>
+
+            <label for="EDA_tonic_mean">EDA Tonic Mean:</label>
+            <input type="number" id="EDA_tonic_mean" step="any" required>
+
+            <label for="Resp_mean">Response Mean:</label>
+            <input type="number" id="Resp_mean" step="any" required>
+
+            <label for="TEMP_mean">Temperature Mean:</label>
+            <input type="number" id="TEMP_mean" step="any" required>
+
+            <label for="age">Age:</label>
+            <input type="number" id="age" required>
+
+            <label for="height">Height (cm):</label>
+            <input type="number" id="height" required>
+
+            <label for="weight">Weight (kg):</label>
+            <input type="number" id="weight" required>
+
+            <button type="submit">Predict Stress Level</button>
+        </form>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        document.getElementById('stressForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                BVP_mean: parseFloat(document.getElementById('BVP_mean').value),
+                EDA_phasic_mean: parseFloat(document.getElementById('EDA_phasic_mean').value),
+                EDA_tonic_mean: parseFloat(document.getElementById('EDA_tonic_mean').value),
+                Resp_mean: parseFloat(document.getElementById('Resp_mean').value),
+                TEMP_mean: parseFloat(document.getElementById('TEMP_mean').value),
+                age: parseInt(document.getElementById('age').value),
+                height: parseInt(document.getElementById('height').value),
+                weight: parseInt(document.getElementById('weight').value)
+            };
+
+            try {
+                const response = await fetch('http://localhost:5000/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData),
+                });
+                
+                const data = await response.json();
+                const resultDiv = document.getElementById('result');
+                
+                switch(data.stress_level) {
+                    case 0:
+                        resultDiv.textContent = 'Predicted Stress Level: Low';
+                        resultDiv.style.color = 'green';
+                        break;
+                    case 1:
+                        resultDiv.textContent = 'Predicted Stress Level: Medium';
+                        resultDiv.style.color = 'orange';
+                        break;
+                    case 2:
+                        resultDiv.textContent = 'Predicted Stress Level: High';
+                        resultDiv.style.color = 'red';
+                        break;
+                    default:
+                        resultDiv.textContent = 'Unable to determine stress level';
+                        resultDiv.style.color = 'black';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('result').textContent = 'An error occurred. Please try again.';
+            }
+        });
+    </script>
+</body>
+</html>
