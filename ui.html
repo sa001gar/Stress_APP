@@ -1,197 +1,284 @@
 <!DOCTYPE html>
 <html>
 <head>
-<style>
+  <style>
     body {
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    min-height: 100vh;
-    margin: 0;
-    padding: 20px;
-    font-family: system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      font-family: system-ui, -apple-system, sans-serif;
     }
 
     .container {
-    max-width: 1200px;
-    margin: 0 auto;
+      max-width: 1200px;
+      margin: 0 auto;
     }
 
     .main-heading {
-    text-align: center;
-    font-size: 32px;
-    font-weight: bold;
-    margin-bottom: 30px;
-    background: linear-gradient(120deg, #2c3e50, #3498db);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 20px 0;
+      text-align: center;
+      font-size: 32px;
+      font-weight: bold;
+      margin-bottom: 30px;
+      background: linear-gradient(120deg, #2c3e50, #3498db);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+      padding: 20px 0;
     }
 
     .upload-container {
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 16px;
-    padding: 25px;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(5px);
-    margin-bottom: 20px;
-    text-align: center;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 16px;
+      padding: 25px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(5px);
+      margin-bottom: 20px;
+      text-align: center;
     }
 
     .title {
-    font-size: 22px;
-    margin-bottom: 25px;
-    color: #2d3748;
-    font-weight: 600;
+      font-size: 22px;
+      margin-bottom: 25px;
+      color: #2d3748;
+      font-weight: 600;
+    }
+
+    .requirements {
+      background: #f8fafc;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px 0;
+      text-align: left;
+      font-size: 14px;
+      color: #4a5568;
+    }
+
+    .requirements ul {
+      margin: 10px 0;
+      padding-left: 20px;
+    }
+
+    #uploadForm {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
     }
 
     .custom-file-input {
-    padding: 10px 15px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    margin-right: 10px;
+      padding: 10px 15px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
     }
 
     .submit-button {
-    padding: 10px 20px;
-    background: linear-gradient(135deg, #00c6fb 0%, #005bea 100%);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
+      padding: 10px 20px;
+      background: linear-gradient(135deg, #00c6fb 0%, #005bea 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .submit-button:hover {
+      transform: translateY(-2px);
     }
 
     .table-container {
-    background: white;
-    border-radius: 16px;
-    padding: 20px;
-    margin-top: 20px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    overflow-x: auto;
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      margin-top: 20px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      overflow-x: auto;
+      display: none;
     }
 
     table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
     }
 
     th, td {
-    padding: 12px 15px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
     }
 
     th {
-    background: #f8fafc;
-    font-weight: 600;
+      background: #f8fafc;
+      font-weight: 600;
     }
 
     tr:hover {
-    background-color: #f5f7fa;
+      background-color: #f5f7fa;
     }
 
     .loading {
-    display: none;
-    margin: 20px 0;
-    color: #4a5568;
+      display: none;
+      margin: 20px 0;
+      color: #4a5568;
     }
 
     .error {
-    color: #e53e3e;
-    margin: 10px 0;
-    display: none;
+      display: none;
+      color: #e53e3e;
+      padding: 10px;
+      margin: 10px 0;
+      background: #fff5f5;
+      border-radius: 8px;
     }
-</style>
+
+    .stress-level-low {
+      color: #48bb78;
+      font-weight: 500;
+    }
+
+    .stress-level-medium {
+      color: #ecc94b;
+      font-weight: 500;
+    }
+
+    .stress-level-high {
+      color: #e53e3e;
+      font-weight: 500;
+    }
+  </style>
 </head>
 <body>
-<div class="container">
+  <div class="container">
     <h1 class="main-heading">Human Stress Detection using Machine Learning</h1>
     <div class="upload-container">
-    <h2 class="title">Upload File</h2>
-    <input type="file" id="fileInput" class="custom-file-input" accept=".csv">
-    <button onclick="uploadFile()" class="submit-button">Upload</button>
-    <div id="loading" class="loading">Uploading file...</div>
-    <div id="error" class="error"></div>
+      <h2 class="title">Upload File</h2>
+      <div class="requirements">
+        <strong>Required CSV Columns:</strong>
+        <ul>
+          <li>name</li>
+          <li>student_id</li>
+          <li>age</li>
+          <li>height</li>
+          <li>weight</li>
+          <li>blood_pressure</li>
+          <li>spo2</li>
+          <li>sleep_night</li>
+        </ul>
+      </div>
+      <form id="uploadForm" onsubmit="handleSubmit(event)">
+        <input type="file" id="fileInput" class="custom-file-input" accept=".csv" required>
+        <button type="submit" class="submit-button">Upload</button>
+      </form>
+      <div id="loading" class="loading">Processing data and predicting stress levels...</div>
+      <div id="error" class="error"></div>
     </div>
 
-    <div id="tableContainer" class="table-container" style="display: none;">
-    <h2>Response Data</h2>
-    <div id="tableContent"></div>
+    <div id="tableContainer" class="table-container">
+      <h2>Stress Level Predictions</h2>
+      <div id="tableContent"></div>
     </div>
-</div>
+  </div>
 
-<script>
-    async function uploadFile() {
-    const fileInput = document.getElementById('fileInput');
-    const loadingDiv = document.getElementById('loading');
-    const errorDiv = document.getElementById('error');
-    const tableContainer = document.getElementById('tableContainer');
-    
-    if (!fileInput.files[0]) {
-        errorDiv.style.display = 'block';
-        errorDiv.textContent = 'Please select a file first';
-        return;
+  <script>
+    function handleSubmit(event) {
+      event.preventDefault(); // Prevent form submission and page reload
+      uploadFile();
     }
 
-    const formData = new FormData();
-    formData.append('file', fileInput.files[0]);
+    async function uploadFile() {
+      const fileInput = document.getElementById('fileInput');
+      const loadingDiv = document.getElementById('loading');
+      const errorDiv = document.getElementById('error');
+      const tableContainer = document.getElementById('tableContainer');
+      
+      const file = fileInput.files[0];
+      if (!file) {
+        showError('Please select a file first');
+        return;
+      }
 
-    try {
+      if (!file.name.endsWith('.csv')) {
+        showError('Please upload a CSV file');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
         loadingDiv.style.display = 'block';
         errorDiv.style.display = 'none';
+        tableContainer.style.display = 'none';
         
         const response = await fetch('http://127.0.0.1:8000/upload/', {
-        method: 'POST',
-        body: formData
+          method: 'POST',
+          body: formData
         });
 
+        const data = await response.json();
+
         if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+          throw new Error(data.detail || 'Error uploading file');
         }
 
-        const data = await response.json();
-        displayData(data);
+        displayData(data.data);
         tableContainer.style.display = 'block';
-    } catch (error) {
-        errorDiv.style.display = 'block';
-        errorDiv.textContent = `Error: ${error.message}`;
-    } finally {
+      } catch (error) {
+        showError(error.message);
+      } finally {
         loadingDiv.style.display = 'none';
+      }
     }
+
+    function showError(message) {
+      const errorDiv = document.getElementById('error');
+      errorDiv.textContent = `Error: ${message}`;
+      errorDiv.style.display = 'block';
+    }
+
+    function getStressLevelClass(level) {
+      const levelNum = parseFloat(level);
+      if (levelNum <= 0.4) return 'stress-level-low';
+      if (levelNum <= 0.7) return 'stress-level-medium';
+      return 'stress-level-high';
     }
 
     function displayData(data) {
-    const tableContent = document.getElementById('tableContent');
-    
-    if (Array.isArray(data) && data.length > 0) {
-        // Create table headers from the first object's keys
-        const headers = Object.keys(data[0]);
-        
+      const tableContent = document.getElementById('tableContent');
+      
+      if (Array.isArray(data) && data.length > 0) {
         let tableHTML = `
-        <table>
+          <table>
             <thead>
-            <tr>
-                ${headers.map(header => `<th>${header}</th>`).join('')}
-            </tr>
+              <tr>
+                <th>Name</th>
+                <th>Student ID</th>
+                <th>Stress Level</th>
+              </tr>
             </thead>
             <tbody>
-            ${data.map(row => `
+              ${data.map(row => `
                 <tr>
-                ${headers.map(header => `<td>${row[header]}</td>`).join('')}
+                  <td>${row.name}</td>
+                  <td>${row.student_id}</td>
+                  <td class="${getStressLevelClass(row.stress_level)}">
+                    ${(row.stress_level * 100).toFixed(1)}%
+                  </td>
                 </tr>
-            `).join('')}
+              `).join('')}
             </tbody>
-        </table>
+          </table>
         `;
         
         tableContent.innerHTML = tableHTML;
-    } else {
-        tableContent.innerHTML = '<p>No data available</p>';
+      } else {
+        tableContent.innerHTML = '<p>No predictions available</p>';
+      }
     }
-    }
-</script>
+  </script>
 </body>
 </html>
